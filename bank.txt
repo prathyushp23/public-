@@ -1,0 +1,46 @@
+Create PROCEDURE spAddCust
+	@accno int,
+	@name nvarchar (256),
+	@balance int	
+AS
+BEGIN	
+	insert into accdetails Values (@accno,@name,@balance,GETDATE())
+END
+GO
+
+create function reduce(@frm int,@amt int)
+returns int 
+as
+begin
+Declare @ramt int
+set @ramt = (select balance from dbo.accdetails where accno = @frm)- @amt
+return @ramt
+end
+go
+
+create function added(@too int,@amt int)
+returns int 
+as
+begin
+Declare @aamt int
+set @aamt = (select balance from dbo.accdetails where accno = @too)+ @amt
+return @aamt
+end
+go
+
+Create Procedure spTransation
+	@frm int,
+	@too int,
+	@amt int	
+AS
+BEGIN
+	declare @aamt int = dbo.added(@too, @amt)
+	declare @ramt int = dbo.reduce(@frm, @amt)
+	UPDATE accdetails SET balance = @ramt, time = GETDATE() WHERE accno = @frm
+	UPDATE accdetails SET balance = @aamt, time = GETDATE() WHERE accno = @too
+	insert into transation (frm,too,amt,tim) Values (@frm,@too,@amt,GETDATE())	
+END
+GO
+
+
+
