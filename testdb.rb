@@ -1,3 +1,4 @@
 puts "enter one number"
-inp = $stdin.read
-puts inp
+
+puts "this i s the new change made for testing the commit"
+
